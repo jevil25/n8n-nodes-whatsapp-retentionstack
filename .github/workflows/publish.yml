@@ -32,7 +32,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22 # npm 12+ dropped Node 20; keep this >= npm's engine range
-          registry-url: https://registry.npmjs.org
+          # No registry-url on purpose: it writes an .npmrc expecting NODE_AUTH_TOKEN,
+          # and an empty token there can shadow OIDC. registry.npmjs.org is the default.
 
       # Node 22 ships npm 10; trusted publishing needs >= 11.5.1
       - run: npm install -g npm@latest
