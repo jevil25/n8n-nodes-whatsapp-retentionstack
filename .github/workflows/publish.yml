@@ -26,6 +26,9 @@ jobs:
     permissions:
       contents: read
       id-token: write # required for provenance + trusted publishing
+    env:
+      # job-level so the step `if:` below can read it (step-level env cannot)
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
     steps:
       - uses: actions/checkout@v4
 
@@ -70,8 +73,9 @@ jobs:
       # add an NPM_TOKEN repo secret (granular access token, "Read and write"
       # for this package). Provenance still works — it needs id-token + a public
       # repo, not trusted publishing. Remove this once OIDC works.
+      # `secrets` is not usable in a step `if:`; the job-level env above is.
       - name: Use NPM_TOKEN if present
-        if: ${{ secrets.NPM_TOKEN != '' }}
-        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+        if: env.NPM_TOKEN != ''
+        run: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
 
       - run: npm publish --provenance --access public
