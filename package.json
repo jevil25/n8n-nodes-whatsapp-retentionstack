@@ -1,0 +1,53 @@
+{
+  "name": "n8n-nodes-whatsapp-retentionstack",
+  "version": "0.1.0",
+  "description": "n8n nodes for the WhatsApp Messaging API by Retention Stack. Send WhatsApp text, images, files and OTPs, and trigger workflows on incoming messages. No Meta approval needed.",
+  "keywords": [
+    "n8n-community-node-package",
+    "n8n",
+    "whatsapp",
+    "whatsapp-api",
+    "messaging",
+    "otp",
+    "rapidapi"
+  ],
+  "license": "MIT",
+  "homepage": "https://whatsapp-messaging.retentionstack.agency",
+  "author": {
+    "name": "Retention Stack",
+    "email": "jevil257@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jevil257/n8n-nodes-whatsapp-retentionstack.git"
+  },
+  "main": "index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rm -rf dist && tsc && cp nodes/WhatsAppRetentionStack/*.svg dist/nodes/WhatsAppRetentionStack/",
+    "dev": "tsc --watch",
+    "test": "npm run build && node test/smoke.mjs",
+    "prepublishOnly": "npm test",
+    "gen": "node scripts/gen.mjs"
+  },
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "credentials": [
+      "dist/credentials/WhatsAppRetentionStackApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/WhatsAppRetentionStack/WhatsAppRetentionStack.node.js",
+      "dist/nodes/WhatsAppRetentionStack/WhatsAppRetentionStackTrigger.node.js"
+    ]
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "n8n-workflow": "^2.16.0",
+    "typescript": "^5.5.4"
+  }
+}
