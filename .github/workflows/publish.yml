@@ -31,10 +31,10 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22 # npm 12+ dropped Node 20; keep this >= npm's engine range
           registry-url: https://registry.npmjs.org
 
-      # trusted publishing needs a recent npm
+      # Node 22 ships npm 10; trusted publishing needs >= 11.5.1
       - run: npm install -g npm@latest
 
       - run: npm ci
