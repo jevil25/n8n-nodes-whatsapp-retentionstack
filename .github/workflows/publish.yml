@@ -66,4 +66,12 @@ jobs:
             console.log("→ npm expects Workflow filename =", (c.workflow_ref||"").split("/").pop().split("@")[0]);
           ' "$TOKEN"
 
+      # Fallback: if trusted publishing (OIDC) is not configured on npmjs.com,
+      # add an NPM_TOKEN repo secret (granular access token, "Read and write"
+      # for this package). Provenance still works — it needs id-token + a public
+      # repo, not trusted publishing. Remove this once OIDC works.
+      - name: Use NPM_TOKEN if present
+        if: ${{ secrets.NPM_TOKEN != '' }}
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+
       - run: npm publish --provenance --access public
