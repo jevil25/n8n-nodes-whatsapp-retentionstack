@@ -1,4 +1,5 @@
 import type {
+	Icon,
 	IHookFunctions,
 	INodeType,
 	INodeTypeDescription,
@@ -17,14 +18,14 @@ const EVENTS = [
 	{ name: 'Message Revoked', value: 'message.revoked' },
 	{ name: 'Group Join', value: 'group.join' },
 	{ name: 'Group Leave', value: 'group.leave' },
-	{ name: 'Session Status', value: 'session.status', description: 'Session connected, disconnected, etc.' },
+	{ name: 'Session Status', value: 'session.status', description: 'Session connected, disconnected, or other state changes' },
 ];
 
 export class WhatsAppRetentionStackTrigger implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'WhatsApp by Retention Stack Trigger',
 		name: 'whatsAppRetentionStackTrigger',
-		icon: 'file:whatsapp.svg',
+		icon: { light: 'file:whatsapp.svg', dark: 'file:whatsapp.dark.svg' } as Icon,
 		group: ['trigger'],
 		version: 1,
 		subtitle: '={{ $parameter["events"].join(", ") }}',
@@ -66,7 +67,14 @@ export class WhatsAppRetentionStackTrigger implements INodeType {
 						json: true,
 					});
 					return JSON.stringify(res).includes(url);
-				} catch {
+				} catch (error) {
+					// Not proof the webhook is absent — the lookup itself failed. Log it so a
+					// bad session or key is visible, and report "not registered" so create() runs.
+					this.logger.warn(
+						`WhatsApp trigger: could not check webhooks for session "${session}": ${
+							error instanceof Error ? error.message : String(error)
+						}`,
+					);
 					return false;
 				}
 			},
@@ -92,8 +100,14 @@ export class WhatsAppRetentionStackTrigger implements INodeType {
 						body: { webhookUrl: url },
 						json: true,
 					});
-				} catch {
-					// webhook already gone; nothing to clean up
+				} catch (error) {
+					// Deactivation should still succeed if the webhook is already gone, but a
+					// real failure would otherwise leave it registered silently.
+					this.logger.warn(
+						`WhatsApp trigger: could not remove webhook for session "${session}": ${
+							error instanceof Error ? error.message : String(error)
+						}`,
+					);
 				}
 				return true;
 			},

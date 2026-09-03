@@ -1,5 +1,5 @@
-import type { INodeProperties, INodePropertyOptions, INodeType, INodeTypeDescription } from 'n8n-workflow';
-import { NodeConnectionTypes } from 'n8n-workflow';
+import type { Icon, INodeProperties, INodePropertyOptions, INodeType, INodeTypeDescription } from 'n8n-workflow';
+import { NodeConnectionTypes, UserError } from 'n8n-workflow';
 import { BASE_URL } from '../../credentials/WhatsAppRetentionStackApi.credentials';
 import { ENDPOINTS } from './endpoints';
 
@@ -16,7 +16,7 @@ const C = `/v1/sessions/${S}/channels/{{$parameter.channelId}}`;
 const op = (name: string, value: string, method: Method, url: string): INodePropertyOptions => {
 	const route = `${method} ${url.replace(/\{\{\$parameter\.(\w+)\}\}/g, '{$1}')}`;
 	const action = ENDPOINTS[route];
-	if (!action) throw new Error(`No summary in openapi.json for ${route}; run npm run gen`);
+	if (!action) throw new UserError(`No summary in openapi.json for ${route}; run npm run gen`);
 	return { name, value, action, description: route, routing: { request: { method, url: url.includes('{{') ? `=${url}` : url } } };
 };
 
@@ -155,7 +155,7 @@ const message: INodeProperties[] = [
 	{ displayName: 'Allow Multiple Answers', name: 'multipleAnswers', type: 'boolean', default: false, ...show('message', ['sendPoll']), ...body('poll.multipleAnswers') },
 
 	// get many
-	{ displayName: 'Limit', name: 'limit', type: 'number', default: 100, typeOptions: { minValue: 1 }, description: 'Max number of results to return', ...show('message', ['getMany']), ...query('limit') },
+	{ displayName: 'Limit', name: 'limit', type: 'number', default: 50, typeOptions: { minValue: 1 }, description: 'Max number of results to return', ...show('message', ['getMany']), ...query('limit') },
 	{ displayName: 'Download Media', name: 'downloadMedia', type: 'boolean', default: false, ...show('message', ['getMany']), ...query('downloadMedia') },
 
 	// additional fields, scoped so nothing unsupported is sent
@@ -292,7 +292,7 @@ const group: INodeProperties[] = [
 		default: {},
 		...show('group', ['getMany']),
 		options: [
-			{ displayName: 'Limit', name: 'limit', type: 'number', default: 10, typeOptions: { minValue: 1 }, description: 'Max number of results to return', ...query('limit') },
+			{ displayName: 'Limit', name: 'limit', type: 'number', default: 50, typeOptions: { minValue: 1 }, description: 'Max number of results to return', ...query('limit') },
 			{ displayName: 'Offset', name: 'offset', type: 'number', default: 0, ...query('offset') },
 			{ displayName: 'Sort By', name: 'sortBy', type: 'options', options: [{ name: 'ID', value: 'id' }, { name: 'Subject', value: 'subject' }], default: 'subject', ...query('sortBy') },
 			{ displayName: 'Sort Order', name: 'sortOrder', type: 'options', options: [{ name: 'Ascending', value: 'asc' }, { name: 'Descending', value: 'desc' }], default: 'asc', ...query('sortOrder') },
@@ -334,7 +334,7 @@ export class WhatsAppRetentionStack implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'WhatsApp by Retention Stack',
 		name: 'whatsAppRetentionStack',
-		icon: 'file:whatsapp.svg',
+		icon: { light: 'file:whatsapp.svg', dark: 'file:whatsapp.dark.svg' } as Icon,
 		group: ['output'],
 		version: 1,
 		subtitle: '={{ $parameter["operation"] + ": " + $parameter["resource"] }}',

@@ -26,11 +26,12 @@
     "dist"
   ],
   "scripts": {
-    "build": "rm -rf dist && tsc && cp nodes/WhatsAppRetentionStack/*.svg dist/nodes/WhatsAppRetentionStack/",
+    "build": "rm -rf dist && tsc && cp nodes/WhatsAppRetentionStack/*.svg dist/nodes/WhatsAppRetentionStack/ && cp credentials/*.svg dist/credentials/",
     "dev": "tsc --watch",
-    "test": "npm run build && node test/smoke.mjs",
+    "test": "npm run build && npm run lint && node test/smoke.mjs",
     "prepublishOnly": "npm test",
-    "gen": "node scripts/gen.mjs"
+    "gen": "node scripts/gen.mjs",
+    "lint": "eslint credentials nodes package.json"
   },
   "n8n": {
     "n8nNodesApiVersion": 1,
@@ -46,8 +47,12 @@
     "n8n-workflow": "*"
   },
   "devDependencies": {
+    "@n8n/eslint-plugin-community-nodes": "^0.31.0",
     "@types/node": "^22.0.0",
+    "eslint": "^9.39.5",
+    "eslint-plugin-n8n-nodes-base": "^2.0.0",
     "n8n-workflow": "^2.16.0",
-    "typescript": "^5.5.4"
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^8.69.0"
   }
 }

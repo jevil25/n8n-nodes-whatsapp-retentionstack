@@ -53,22 +53,6 @@ jobs:
           PKG="$(node -p 'require("./package.json").version')"
           [ "$TAG" = "$PKG" ] || { echo "tag v$TAG != package.json $PKG"; exit 1; }
 
-      # Prints the identity npm matches against the Trusted Publisher config.
-      # Claims only, never the token itself. Delete once publishing works.
-      - name: Show OIDC claims npm will match on
-        run: |
-          TOKEN=$(curl -sS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
-            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=npm:registry.npmjs.org" | node -pe 'JSON.parse(require("fs").readFileSync(0,"utf8")).value')
-          node -e '
-            const c = JSON.parse(Buffer.from(process.argv[1].split(".")[1], "base64url").toString());
-            console.log("repository      :", c.repository);
-            console.log("workflow_ref    :", c.workflow_ref);
-            console.log("environment     :", c.environment ?? "(none)");
-            console.log("→ npm expects Organization/user =", (c.repository||"/").split("/")[0]);
-            console.log("→ npm expects Repository        =", (c.repository||"/").split("/")[1]);
-            console.log("→ npm expects Workflow filename =", (c.workflow_ref||"").split("/").pop().split("@")[0]);
-          ' "$TOKEN"
-
       # Fallback: if trusted publishing (OIDC) is not configured on npmjs.com,
       # add an NPM_TOKEN repo secret (granular access token, "Read and write"
       # for this package). Provenance still works — it needs id-token + a public
