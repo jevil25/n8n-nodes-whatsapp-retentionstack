@@ -19,7 +19,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/jevil257/n8n-nodes-whatsapp-retentionstack.git"
+    "url": "git+https://github.com/jevil25/n8n-nodes-whatsapp-retentionstack.git"
   },
   "main": "index.js",
   "files": [

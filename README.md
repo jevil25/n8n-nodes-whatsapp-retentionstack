@@ -126,6 +126,6 @@ npm link        # then in ~/.n8n/nodes: npm link n8n-nodes-whatsapp-retentionsta
 
 - API docs: https://whatsapp-messaging.retentionstack.agency/docs
 - RapidAPI listing: https://rapidapi.com/jevil257/api/whatsapp-messaging-bot
-- Issues: https://github.com/jevil257/n8n-nodes-whatsapp-retentionstack/issues
+- Issues: https://github.com/jevil25/n8n-nodes-whatsapp-retentionstack/issues
 
 MIT © Retention Stack
