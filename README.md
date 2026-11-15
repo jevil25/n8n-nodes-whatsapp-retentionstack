@@ -15,6 +15,12 @@ No Meta approval queue. No WhatsApp Business account. 5 minutes from sign-in to 
 
 Upgrading from 0.1.x: earlier versions used a RapidAPI key. Replace it with a session token or account key from the console; RapidAPI keys no longer work with this node.
 
+## Linking a number
+
+Link each number once, either in the [console](https://whatsapp-messaging.retentionstack.agency/app) or with the Session resource (Get QR Code or Request Pairing Code), then wait for Get to report `WORKING`.
+
+If Get reports `PASSKEY_REQUIRED` or `PASSKEY_CONFIRMATION_REQUIRED`, WhatsApp wants a passkey. The passkey is signed in a browser with the WhatsApp extension, so finish linking in the console; this node has no passkey operations.
+
 ## Nodes
 
 **WhatsApp by Retention Stack** (action)
