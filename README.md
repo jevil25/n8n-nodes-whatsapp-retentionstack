@@ -15,6 +15,16 @@ No Meta approval queue. No WhatsApp Business account. 5 minutes from sign-in to 
 
 Upgrading from 0.1.x: earlier versions used a RapidAPI key. Replace it with a session token or account key from the console; RapidAPI keys no longer work with this node.
 
+## Linking a number
+
+Link each number once, either in the [console](https://whatsapp-messaging.retentionstack.agency/app) or with the Session resource (Get QR Code or Request Pairing Code), then wait for Get to report `WORKING`.
+
+If Get reports `PASSKEY_REQUIRED`, WhatsApp wants a passkey. The challenge can only be signed in a browser on web.whatsapp.com with the WhatsApp extension, so the easiest path is to finish linking in the console. To do it from a workflow instead:
+
+1. **Get Passkey Challenge**, and pass the result unchanged to your browser signing step.
+2. **Submit Passkey** with the signed `credential.toJSON()` object.
+3. If Get then reports `PASSKEY_CONFIRMATION_REQUIRED`: **Get Passkey Confirmation Code**, check it matches the code on the phone, then **Confirm Passkey**.
+
 ## Nodes
 
 **WhatsApp by Retention Stack** (action)
@@ -55,11 +65,14 @@ Dropdown labels follow n8n conventions (for example "Get Many"). The action text
 | Message | Star | Star or unstar message | `PUT /v1/star` |
 | Message | Start Typing | Start typing indicator | `POST /v1/startTyping` |
 | Message | Stop Typing | Stop typing indicator | `POST /v1/stopTyping` |
+| Session | Confirm Passkey | Confirm passkey code | `POST /v1/{session}/auth/passkey/confirm` |
 | Session | Delete | Delete session | `DELETE /v1/sessions/{session}` |
 | Session | Get | Get session | `GET /v1/sessions/{session}` |
 | Session | Get Chat Presence | Get chat presence | `GET /v1/sessions/{session}/presence/{chatId}` |
 | Session | Get Many | List sessions | `GET /v1/sessions` |
 | Session | Get Me | Get session me | `GET /v1/sessions/{session}/me` |
+| Session | Get Passkey Challenge | Get passkey challenge | `GET /v1/{session}/auth/passkey/challenge` |
+| Session | Get Passkey Confirmation Code | Get passkey confirmation code | `GET /v1/{session}/auth/passkey/confirmation` |
 | Session | Get Presence | Get all chats presence | `GET /v1/sessions/{session}/presence` |
 | Session | Get QR Code | Get QR code | `GET /v1/{session}/auth/qr` |
 | Session | Logout | Logout session | `POST /v1/sessions/logout` |
@@ -67,6 +80,7 @@ Dropdown labels follow n8n conventions (for example "Get Many"). The action text
 | Session | Set Presence | Set presence | `POST /v1/sessions/{session}/presence` |
 | Session | Start | Start session | `POST /v1/sessions/start` |
 | Session | Stop | Stop session | `POST /v1/sessions/stop` |
+| Session | Submit Passkey | Submit passkey assertion | `POST /v1/{session}/auth/passkey` |
 | Session | Subscribe Chat Presence | Subscribe to chat presence | `POST /v1/sessions/{session}/presence/{chatId}/subscribe` |
 | Group | Add Participants | Add participants | `POST /v1/sessions/{session}/groups/{groupId}/participants/add` |
 | Group | Count | Get groups count | `GET /v1/sessions/{session}/groups/count` |
