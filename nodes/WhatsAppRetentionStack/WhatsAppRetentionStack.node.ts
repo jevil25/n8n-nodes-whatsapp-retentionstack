@@ -57,7 +57,7 @@ const str = (displayName: string, name: string, resource: string, ops: string[] 
 });
 
 const session = (resource: string, ops?: string[], routing: object = {}): INodeProperties =>
-	str('Session', 'session', resource, ops, { default: 'default', required: true, description: 'Name of the connected WhatsApp session (the number you paired)', ...routing });
+	str('Session', 'session', resource, ops, { default: 'default', required: true, description: 'Leave as default with a session token. With an account key, enter the session name.', ...routing });
 
 const chatId = (resource: string, ops: string[], routing: object = body('chatId')): INodeProperties =>
 	str('Chat ID', 'chatId', resource, ops, { required: true, placeholder: '1234567890', description: 'Phone number with country code (no +), or a group/channel ID', ...routing });

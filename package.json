@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-whatsapp-retentionstack",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "n8n nodes for the WhatsApp Messaging API by Retention Stack. Send WhatsApp text, images, files and OTPs, and trigger workflows on incoming messages. No Meta approval needed.",
   "keywords": [
     "n8n-community-node-package",
@@ -8,8 +8,7 @@
     "whatsapp",
     "whatsapp-api",
     "messaging",
-    "otp",
-    "rapidapi"
+    "otp"
   ],
   "license": "MIT",
   "homepage": "https://whatsapp-messaging.retentionstack.agency",

@@ -4,7 +4,7 @@ import { execSync } from 'node:child_process';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 
-const specPath = process.argv[2] ?? new URL('../../wp-rapidapi/openapi.json', import.meta.url);
+const specPath = process.argv[2] ?? new URL('../../wp-rapidapi/openapi-direct.json', import.meta.url);
 const spec = JSON.parse(readFileSync(specPath, 'utf8'));
 
 // 1. endpoints.ts: "METHOD /path" -> docs summary
