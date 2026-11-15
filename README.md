@@ -3,7 +3,17 @@
 n8n community nodes for the [WhatsApp Messaging API by Retention Stack](https://whatsapp-messaging.retentionstack.agency).
 Send WhatsApp text, images, files, videos, locations and OTPs from any workflow, and trigger workflows on incoming messages.
 
-No Meta approval queue. No WhatsApp Business account. 5 minutes from subscribe to first message.
+No Meta approval queue. No WhatsApp Business account. 5 minutes from sign-in to first message.
+
+## Credentials
+
+1. Sign in at [whatsapp-messaging.retentionstack.agency/start](https://whatsapp-messaging.retentionstack.agency/start) and link your number.
+2. Copy a key from the console:
+   - Session token (`ch_live_...`): one number. Leave every node's Session field as `default`.
+   - Account key (`ak_live_...`): every number on your account. Enter the session name in each node's Session field.
+3. In n8n, create a WhatsApp by Retention Stack API credential and paste the key.
+
+Upgrading from 0.1.x: earlier versions used a RapidAPI key. Replace it with a session token or account key from the console; RapidAPI keys no longer work with this node.
 
 ## Nodes
 

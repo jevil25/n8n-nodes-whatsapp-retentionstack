@@ -42,7 +42,7 @@ export class WhatsAppRetentionStackTrigger implements INodeType {
 				type: 'string',
 				default: 'default',
 				required: true,
-				description: 'Name of the connected WhatsApp session to listen on',
+				description: 'Session to listen on. Leave as default with a session token; with an account key, enter the session name.',
 			},
 			{
 				displayName: 'Events',

@@ -1,30 +1,28 @@
 import type { Icon, IAuthenticateGeneric, ICredentialTestRequest, ICredentialType, INodeProperties } from 'n8n-workflow';
 
-export const BASE_URL = 'https://whatsapp-messaging-bot.p.rapidapi.com';
-export const RAPIDAPI_HOST = 'whatsapp-messaging-bot.p.rapidapi.com';
+export const BASE_URL = 'https://wp-rapidapi.retentionstack.agency';
 
 export class WhatsAppRetentionStackApi implements ICredentialType {
 	name = 'whatsAppRetentionStackApi';
 	displayName = 'WhatsApp by Retention Stack API';
 	icon: Icon = { light: 'file:whatsapp.svg', dark: 'file:whatsapp.dark.svg' };
-	documentationUrl = 'https://whatsapp-messaging.retentionstack.agency/docs';
+	documentationUrl = 'https://whatsapp-messaging.retentionstack.agency/docs/guides/authentication';
 	properties: INodeProperties[] = [
 		{
-			displayName: 'RapidAPI Key',
+			displayName: 'API Key',
 			name: 'apiKey',
 			type: 'string',
 			typeOptions: { password: true },
 			default: '',
 			description:
-				'Your X-RapidAPI-Key. Subscribe (free plan, no credit card) at rapidapi.com/jevil257/api/whatsapp-messaging-bot.',
+				'A session token (ch_live_...) for one number, or an account key (ak_live_...) for every number. Get both at whatsapp-messaging.retentionstack.agency/app.',
 		},
 	];
 	authenticate: IAuthenticateGeneric = {
 		type: 'generic',
 		properties: {
 			headers: {
-				'x-rapidapi-key': '={{$credentials.apiKey}}',
-				'x-rapidapi-host': RAPIDAPI_HOST,
+				Authorization: '=Bearer {{$credentials.apiKey}}',
 			},
 		},
 	};

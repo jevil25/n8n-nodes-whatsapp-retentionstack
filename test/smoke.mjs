@@ -13,7 +13,7 @@ const { WhatsAppRetentionStack } = require('../dist/nodes/WhatsAppRetentionStack
 const { WhatsAppRetentionStackTrigger } = require('../dist/nodes/WhatsAppRetentionStack/WhatsAppRetentionStackTrigger.node.js');
 
 const cred = new WhatsAppRetentionStackApi();
-assert.equal(cred.authenticate.properties.headers['x-rapidapi-host'], 'whatsapp-messaging-bot.p.rapidapi.com');
+assert.equal(cred.authenticate.properties.headers.Authorization, '=Bearer {{$credentials.apiKey}}');
 
 const node = new WhatsAppRetentionStack().description;
 assert.equal(node.credentials[0].name, cred.name, 'node must reference the credential by name');
@@ -40,12 +40,17 @@ for (const p of node.properties) {
 assert(routes.length >= 55, `expected full coverage, got ${routes.length} operations`);
 
 // compare with the API spec when the sibling repo is present
-const spec = new URL('../../wp-rapidapi/openapi.json', import.meta.url);
+const spec = new URL('../../wp-rapidapi/openapi-direct.json', import.meta.url);
 if (existsSync(spec)) {
 	const paths = JSON.parse(readFileSync(spec, 'utf8')).paths;
 	const specRoutes = new Set();
 	for (const [p, methods] of Object.entries(paths)) for (const m of Object.keys(methods)) specRoutes.add(`${m.toUpperCase()} ${p}`);
-	const skip = new Set(['GET /health', 'POST /v1/sessions', 'POST /v1/sessions/{session}/webhooks', 'DELETE /v1/sessions/{session}/webhooks']);
+	const skip = new Set([
+		'GET /health', 'POST /v1/sessions', 'POST /v1/sessions/{session}/webhooks', 'DELETE /v1/sessions/{session}/webhooks',
+		// Passkey signing needs the browser extension on web.whatsapp.com; n8n can't do it.
+		'GET /v1/{session}/auth/passkey/challenge', 'POST /v1/{session}/auth/passkey',
+		'GET /v1/{session}/auth/passkey/confirmation', 'POST /v1/{session}/auth/passkey/confirm',
+	]);
 	for (const p of node.properties.filter((p) => p.name === 'operation'))
 		for (const o of p.options) {
 			const [, path] = o.description.split(' ');
