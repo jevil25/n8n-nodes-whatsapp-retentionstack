@@ -47,9 +47,6 @@ if (existsSync(spec)) {
 	for (const [p, methods] of Object.entries(paths)) for (const m of Object.keys(methods)) specRoutes.add(`${m.toUpperCase()} ${p}`);
 	const skip = new Set([
 		'GET /health', 'POST /v1/sessions', 'POST /v1/sessions/{session}/webhooks', 'DELETE /v1/sessions/{session}/webhooks',
-		// Passkey signing needs the browser extension on web.whatsapp.com; n8n can't do it.
-		'GET /v1/{session}/auth/passkey/challenge', 'POST /v1/{session}/auth/passkey',
-		'GET /v1/{session}/auth/passkey/confirmation', 'POST /v1/{session}/auth/passkey/confirm',
 	]);
 	for (const p of node.properties.filter((p) => p.name === 'operation'))
 		for (const o of p.options) {

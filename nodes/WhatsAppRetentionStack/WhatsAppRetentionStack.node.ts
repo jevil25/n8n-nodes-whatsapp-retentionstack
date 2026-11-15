@@ -57,7 +57,7 @@ const str = (displayName: string, name: string, resource: string, ops: string[] 
 });
 
 const session = (resource: string, ops?: string[], routing: object = {}): INodeProperties =>
-	str('Session', 'session', resource, ops, { default: 'default', required: true, description: 'Leave as default with a session token. With an account key, enter the session name. If the session status is PASSKEY_REQUIRED, finish linking in the console at whatsapp-messaging.retentionstack.agency/app.', ...routing });
+	str('Session', 'session', resource, ops, { default: 'default', required: true, description: 'Leave as default with a session token. With an account key, enter the session name. If the status is PASSKEY_REQUIRED, finish linking in the console at whatsapp-messaging.retentionstack.agency/app or use the passkey operations.', ...routing });
 
 const chatId = (resource: string, ops: string[], routing: object = body('chatId')): INodeProperties =>
 	str('Chat ID', 'chatId', resource, ops, { required: true, placeholder: '1234567890', description: 'Phone number with country code (no +), or a group/channel ID', ...routing });
@@ -188,11 +188,14 @@ const sessionProps: INodeProperties[] = [
 	operation(
 		'session',
 		[
+			op('Confirm Passkey', 'passkeyConfirm', 'POST', `/v1/${S}/auth/passkey/confirm`),
 			op('Delete', 'delete', 'DELETE', `/v1/sessions/${S}`),
 			op('Get', 'get', 'GET', `/v1/sessions/${S}`),
 			op('Get Chat Presence', 'getChatPresence', 'GET', PRESENCE_CHAT),
 			op('Get Many', 'getMany', 'GET', '/v1/sessions'),
 			op('Get Me', 'me', 'GET', `/v1/sessions/${S}/me`),
+			op('Get Passkey Challenge', 'passkeyChallenge', 'GET', `/v1/${S}/auth/passkey/challenge`),
+			op('Get Passkey Confirmation Code', 'passkeyConfirmation', 'GET', `/v1/${S}/auth/passkey/confirmation`),
 			op('Get Presence', 'getPresence', 'GET', `/v1/sessions/${S}/presence`),
 			op('Get QR Code', 'qr', 'GET', `/v1/${S}/auth/qr`),
 			op('Logout', 'logout', 'POST', '/v1/sessions/logout'),
@@ -200,16 +203,28 @@ const sessionProps: INodeProperties[] = [
 			op('Set Presence', 'setPresence', 'POST', `/v1/sessions/${S}/presence`),
 			op('Start', 'start', 'POST', '/v1/sessions/start'),
 			op('Stop', 'stop', 'POST', '/v1/sessions/stop'),
+			op('Submit Passkey', 'passkeySubmit', 'POST', `/v1/${S}/auth/passkey`),
 			op('Subscribe Chat Presence', 'subscribePresence', 'POST', `${PRESENCE_CHAT}/subscribe`),
 		],
 		'get',
 	),
-	session('session', ['delete', 'get', 'getChatPresence', 'me', 'getPresence', 'qr', 'pairingCode', 'subscribePresence']),
+	session('session', ['delete', 'get', 'getChatPresence', 'me', 'getPresence', 'qr', 'pairingCode', 'subscribePresence', 'passkeyChallenge', 'passkeySubmit', 'passkeyConfirmation', 'passkeyConfirm']),
 	session('session', ['start', 'stop', 'logout'], body('name')),
 	session('session', ['setPresence'], body('session')),
 	chatId('session', ['getChatPresence', 'subscribePresence'], {}),
 	{ displayName: 'Logout', name: 'logout', type: 'boolean', default: false, description: 'Whether to also log out (unpair) when stopping', ...show('session', ['stop']), ...body('logout') },
 	str('Phone Number', 'phoneNumber', 'session', ['pairingCode'], { required: true, placeholder: '1234567890', description: 'Number to pair, with country code', ...body('phoneNumber') }),
+	{
+		displayName: 'Signed Credential',
+		name: 'credential',
+		type: 'json',
+		default: '{}',
+		required: true,
+		description:
+			'The challenge must be signed in a browser on web.whatsapp.com with the WhatsApp extension. Paste the resulting credential.toJSON() object here, unchanged.',
+		...show('session', ['passkeySubmit']),
+		routing: { request: { body: '={{ typeof $value === "string" ? JSON.parse($value) : $value }}' } },
+	},
 	{
 		displayName: 'Presence',
 		name: 'presence',
