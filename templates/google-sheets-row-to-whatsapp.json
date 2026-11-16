@@ -1,0 +1,46 @@
+{
+  "name": "New Google Sheets row to WhatsApp message",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": { "item": [{ "mode": "everyMinute" }] },
+        "documentId": { "__rl": true, "value": "", "mode": "url" },
+        "sheetName": { "__rl": true, "value": "", "mode": "url" },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "name": "New row",
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "sendText",
+        "session": "default",
+        "chatId": "={{ String($json.phone).replace(/\\D/g, '') }}",
+        "text": "=Hi {{ $json.name }}, your order {{ $json.order_id }} is confirmed. We'll message you here when it ships."
+      },
+      "name": "Send WhatsApp message",
+      "type": "n8n-nodes-whatsapp-retentionstack.whatsAppRetentionStack",
+      "typeVersion": 1,
+      "position": [240, 0]
+    },
+    {
+      "parameters": {
+        "content": "## Sheet row to WhatsApp\nSheet columns used: `phone` (with country code), `name`, `order_id`. Rename them in the message node to match your sheet.\n\nWorks for order confirmations, appointment reminders and event registrations.\n\nCredential: session token from whatsapp-messaging.retentionstack.agency.",
+        "height": 220,
+        "width": 420
+      },
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [0, -260]
+    }
+  ],
+  "connections": {
+    "New row": { "main": [[{ "node": "Send WhatsApp message", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" }
+}

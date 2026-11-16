@@ -1,0 +1,51 @@
+{
+  "name": "Email alert when a WhatsApp session disconnects",
+  "nodes": [
+    {
+      "parameters": { "session": "default", "events": ["session.status"] },
+      "name": "WhatsApp Trigger",
+      "type": "n8n-nodes-whatsapp-retentionstack.whatsAppRetentionStackTrigger",
+      "typeVersion": 1,
+      "position": [0, 0],
+      "webhookId": "whatsapp-session-status"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Pass through only status changes away from WORKING.\nreturn $input.all().filter(i => {\n  const status = i.json.payload && i.json.payload.status;\n  return status && status !== 'WORKING' && status !== 'STARTING';\n});"
+      },
+      "name": "Only disconnects",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [220, 0]
+    },
+    {
+      "parameters": {
+        "sendTo": "you@example.com",
+        "subject": "=WhatsApp session {{ $json.session }} is {{ $json.payload.status }}",
+        "emailType": "text",
+        "message": "=Session {{ $json.session }} changed to {{ $json.payload.status }} at {{ $now.toISO() }}.\n\nRe-link it in the console: https://whatsapp-messaging.retentionstack.agency/app",
+        "options": {}
+      },
+      "name": "Send alert email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [440, 0]
+    },
+    {
+      "parameters": {
+        "content": "## Session disconnect alert\nWhatsApp unlinks devices now and then. This emails you when the session leaves WORKING, so messages don't fail silently.\n\nSet your address in the Gmail node, or swap it for Slack or Telegram.",
+        "height": 200,
+        "width": 420
+      },
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [0, -240]
+    }
+  ],
+  "connections": {
+    "WhatsApp Trigger": { "main": [[{ "node": "Only disconnects", "type": "main", "index": 0 }]] },
+    "Only disconnects": { "main": [[{ "node": "Send alert email", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" }
+}

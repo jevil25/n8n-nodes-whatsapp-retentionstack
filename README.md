@@ -153,3 +153,11 @@ npm link        # then in ~/.n8n/nodes: npm link n8n-nodes-whatsapp-retentionsta
 - Issues: https://github.com/jevil25/n8n-nodes-whatsapp-retentionstack/issues
 
 MIT © Retention Stack
+
+## Workflow templates
+
+Import these from **Workflows → Import from file**, then select your WhatsApp credential in each WhatsApp node:
+
+- [Send a WhatsApp OTP from a webhook](templates/whatsapp-otp-webhook.json)
+- [New Google Sheets row to WhatsApp message](templates/google-sheets-row-to-whatsapp.json)
+- [Email alert when a WhatsApp session disconnects](templates/session-disconnect-email-alert.json)
