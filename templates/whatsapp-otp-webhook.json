@@ -1,0 +1,115 @@
+{
+  "name": "Send a WhatsApp OTP from a webhook",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "send-otp",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "send-otp"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Expects {\"phone\": \"14155550123\"} in the request body.\nconst phone = String($json.body.phone || \"\").replace(/\\D/g, \"\");\nif (!phone) throw new Error(\"Missing phone in request body\");\n// Web Crypto: works in the Code node without enabling built-in modules.\nconst otp = String(crypto.getRandomValues(new Uint32Array(1))[0] % 1000000).padStart(6, \"0\");\nreturn [{ json: { phone, otp } }];"
+      },
+      "name": "Generate OTP",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "sendText",
+        "session": "default",
+        "chatId": "={{ $json.phone }}",
+        "text": "=Your login code is {{ $json.otp }}. It expires in 5 minutes. Do not share it."
+      },
+      "name": "Send OTP on WhatsApp",
+      "type": "n8n-nodes-whatsapp-retentionstack.whatsAppRetentionStack",
+      "typeVersion": 1,
+      "position": [
+        440,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { sent: true, otp: $('Generate OTP').item.json.otp } }}",
+        "options": {}
+      },
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        660,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## WhatsApp OTP\nPOST `{\"phone\": \"14155550123\"}` to the webhook. The code is sent on WhatsApp and returned to your backend so it can verify it.\n\nStore the code server-side with an expiry; don't send it to the browser.\n\nCredential: session token from whatsapp-messaging.retentionstack.agency.",
+        "height": 220,
+        "width": 420
+      },
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -260
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Generate OTP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate OTP": {
+      "main": [
+        [
+          {
+            "node": "Send OTP on WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send OTP on WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
